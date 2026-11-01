@@ -110,45 +110,64 @@
       box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
     }
 
-    /* Action Grid Selection */
-    .action-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
+    /* Multi Action Box Styles */
+    .action-item-container {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 18px;
+      border-radius: 12px;
       margin-bottom: 15px;
     }
 
-    .action-card {
-      background: var(--bg-input);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px 10px;
-      text-align: center;
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .action-row select, .action-row input {
+      flex: 1;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .remove-action-btn {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      font-weight: 600;
+      font-size: 13px;
+      transition: 0.2s;
     }
 
-    .action-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
+    .remove-action-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
     }
 
-    .action-card.active {
-      border-color: var(--accent-purple);
-      background: rgba(139, 92, 246, 0.12);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-    }
-
-    .action-card span {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 6px;
-    }
-
-    .action-card p {
-      font-size: 12px;
+    .add-action-btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border: 2px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
       font-weight: 700;
-      color: #e2e8f0;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-bottom: 25px;
+    }
+
+    .add-action-btn:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent-blue);
     }
 
     .upload-section {
@@ -297,7 +316,7 @@
 
   <div class="container">
     <div class="header-title"><span>Unlockify Pro</span> 🔓</div>
-    <div class="header-desc">Create secure video locks with social actions & automate Telegram group broadcasting.</div>
+    <div class="header-desc">Create secure video locks with multiple social actions & automate Telegram group broadcasting.</div>
 
     <!-- 1. Basic Information -->
     <div class="section-title">ℹ️ Basic Information</div>
@@ -311,35 +330,25 @@
       <textarea id="pageDesc" rows="2" placeholder="Write a short enticing description for your audience..."></textarea>
     </div>
 
-    <!-- 2. Add Unlock Action -->
-    <div class="section-title">🔒 Choose Unlock Action</div>
-    <div class="action-grid">
-      <div class="action-card active" onclick="selectAction(this, 'Telegram Channel', 'https://t.me/')">
-        <span>✈️</span>
-        <p>Join Telegram</p>
-      </div>
-      <div class="action-card" onclick="selectAction(this, 'YouTube Channel', 'https://youtube.com/')">
-        <span>▶️</span>
-        <p>Subscribe YT</p>
-      </div>
-      <div class="action-card" onclick="selectAction(this, 'X (Twitter)', 'https://x.com/')">
-        <span>✖️</span>
-        <p>Follow on X</p>
-      </div>
-      <div class="action-card" onclick="selectAction(this, 'TikTok Account', 'https://tiktok.com/@')">
-        <span>🎵</span>
-        <p>Follow TikTok</p>
-      </div>
-      <div class="action-card" onclick="selectAction(this, 'Custom Link', 'https://')">
-        <span>🔗</span>
-        <p>Other Link</p>
+    <!-- 2. Multiple Unlock Actions -->
+    <div class="section-title">🔒 Unlock Actions (Multiple Links Allowed)</div>
+    <div id="actionsContainer">
+      <!-- Default Action Row -->
+      <div class="action-item-container">
+        <div class="action-row">
+          <select class="action-type">
+            <option value="Join Telegram">✈️ Join Telegram</option>
+            <option value="Subscribe YT">▶️ Subscribe YT</option>
+            <option value="Follow on X">✖️ Follow on X</option>
+            <option value="Follow TikTok">🎵 Follow TikTok</option>
+            <option value="Other Link">🔗 Other Link</option>
+          </select>
+          <input type="text" class="action-url" placeholder="https://t.me/your_channel">
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label id="taskURLLabel">Telegram Channel Target Link</label>
-      <input type="text" id="taskURL" placeholder="https://t.me/Hodamaewa">
-    </div>
+    <button type="button" class="add-action-btn" onclick="addActionRow()">➕ Add Another Action</button>
 
     <!-- 3. Upload File -->
     <div class="section-title">📹 Video Content Target</div>
@@ -374,8 +383,6 @@
     const BOT_TOKEN = "9020371210:AAEgRfHc3AiwN10PJxfzEQL0PZnT0Z17Cpc";
     const CHAT_ID = "-1003951414350";
 
-    let currentActionType = "Telegram Channel";
-
     const fileInput = document.getElementById('videoInput');
     const fileNameDisplay = document.getElementById('fileName');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -383,37 +390,65 @@
     const progressBar = document.getElementById('progressBar');
     const statusText = document.getElementById('status');
     const videoGallery = document.getElementById('videoGallery');
+    const actionsContainer = document.getElementById('actionsContainer');
 
     fileInput.addEventListener('change', () => {
       fileNameDisplay.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "No file selected";
     });
 
-    function selectAction(element, type, placeholder) {
-      document.querySelectorAll('.action-card').forEach(card => card.classList.remove('active'));
-      element.classList.add('active');
-      currentActionType = type;
-      document.getElementById('taskURLLabel').textContent = `${type} Target Link / Username`;
-      document.getElementById('taskURL').placeholder = placeholder;
+    // Add new action row dynamically
+    function addActionRow() {
+      const div = document.createElement('div');
+      div.className = 'action-item-container';
+      div.innerHTML = `
+        <div class="action-row">
+          <select class="action-type">
+            <option value="Join Telegram">✈️ Join Telegram</option>
+            <option value="Subscribe YT">▶️ Subscribe YT</option>
+            <option value="Follow on X">✖️ Follow on X</option>
+            <option value="Follow TikTok">🎵 Follow TikTok</option>
+            <option value="Other Link">🔗 Other Link</option>
+          </select>
+          <input type="text" class="action-url" placeholder="https://...">
+        </div>
+        <button type="button" class="remove-action-btn" onclick="this.closest('.action-item-container').remove()">Remove Action</button>
+      `;
+      actionsContainer.appendChild(div);
     }
 
     function uploadAndLock() {
       const title = document.getElementById('pageTitle').value.trim();
       const desc = document.getElementById('pageDesc').value.trim();
-      const taskUrl = document.getElementById('taskURL').value.trim();
       const file = fileInput.files[0];
+
+      // Collect all actions
+      const actionRows = document.querySelectorAll('.action-item-container');
+      let actionsList = [];
+      let isValid = true;
+
+      actionRows.forEach(row => {
+        const type = row.querySelector('.action-type').value;
+        const url = row.querySelector('.action-url').value.trim();
+        if(!url) isValid = false;
+        actionsList.push({ type, url });
+      });
 
       if (!title) {
         alert("කරුණාකර Page Title එකක් ඇතුළත් කරන්න.");
         return;
       }
-      if (!taskUrl) {
-        alert("කරුණාකර Task Target Link එකක් ඇතුළත් කරන්න.");
+      if (!isValid) {
+        alert("කරුණාකර සියලුම Action URL / Links සඳහා නිවැරදි ලින්ක් එකක් ඇතුළත් කරන්න.");
         return;
       }
       if (!file) {
         alert("කරුණාකර ප්‍රථමයෙන් වීඩියෝ ෆයිල් එකක් තෝරන්න.");
         return;
       }
+
+      uploadBtn.disabled = true;
+      statusText.textContent = "Connecting to Cloudinary...";
+      statusText.style.color = "var(--text-muted)";
 
       const formData = new FormData();
       formData.append('file', file);
@@ -433,55 +468,80 @@
 
       xhr.onload = () => {
         if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          const videoUrl = response.secure_url;
-          
-          // Generate Unlock Landing Link
-          const unlockLandingUrl = `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(videoUrl)}&task=${encodeURIComponent(taskUrl)}&title=${encodeURIComponent(title)}&type=${encodeURIComponent(currentActionType)}`;
+          try {
+            const response = JSON.parse(xhr.responseText);
+            const videoUrl = response.secure_url;
+            
+            // Generate Unlock Landing Link
+            const unlockLandingUrl = `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(videoUrl)}&title=${encodeURIComponent(title)}`;
 
-          statusText.textContent = "Upload Done! Broadcasting to Telegram Group...";
-          statusText.style.color = "#10b981";
+            statusText.textContent = "Upload Done! Broadcasting to Telegram Group...";
+            statusText.style.color = "#10b981";
 
-          // Remove empty feed placeholder if exists
-          if (videoGallery.querySelector('p')) {
-            videoGallery.innerHTML = '';
+            if (videoGallery.querySelector('p')) {
+              videoGallery.innerHTML = '';
+            }
+
+            // Add to Dashboard Feed
+            addCampaignToFeed(title, desc, actionsList, unlockLandingUrl, videoUrl);
+
+            // Push to Telegram Group with Inline Button
+            sendToTelegramGroup(title, desc, actionsList, unlockLandingUrl, videoUrl);
+
+            // Reset Form
+            document.getElementById('pageTitle').value = '';
+            document.getElementById('pageDesc').value = '';
+            fileInput.value = '';
+            fileNameDisplay.textContent = 'No file selected';
+            
+            // Reset action rows back to default 1 row
+            actionsContainer.innerHTML = `
+              <div class="action-item-container">
+                <div class="action-row">
+                  <select class="action-type">
+                    <option value="Join Telegram">✈️ Join Telegram</option>
+                    <option value="Subscribe YT">▶️ Subscribe YT</option>
+                    <option value="Follow on X">✖️ Follow on X</option>
+                    <option value="Follow TikTok">🎵 Follow TikTok</option>
+                    <option value="Other Link">🔗 Other Link</option>
+                  </select>
+                  <input type="text" class="action-url" placeholder="https://t.me/your_channel">
+                </div>
+              </div>
+            `;
+
+            setTimeout(() => { 
+              progressContainer.style.display = 'none'; 
+              progressBar.style.width = '0%'; 
+              uploadBtn.disabled = false;
+            }, 3000);
+          } catch (parseErr) {
+            console.error("JSON Parse Error:", parseErr);
+            statusText.textContent = "Response Parse Error!";
+            statusText.style.color = "#f43f5e";
+            uploadBtn.disabled = false;
           }
-
-          // Add to Dashboard
-          addCampaignToFeed(title, desc, currentActionType, taskUrl, unlockLandingUrl, videoUrl);
-
-          // Push to Telegram Group with Inline Button
-          sendToTelegramGroup(title, desc, currentActionType, unlockLandingUrl, videoUrl);
-
-          // Reset Form
-          document.getElementById('pageTitle').value = '';
-          document.getElementById('pageDesc').value = '';
-          document.getElementById('taskURL').value = '';
-          fileInput.value = '';
-          fileNameDisplay.textContent = 'No file selected';
-          uploadBtn.disabled = false;
-          setTimeout(() => { progressContainer.style.display = 'none'; progressBar.style.width = '0%'; }, 3000);
         } else {
-          statusText.textContent = "Cloud Upload Failed!";
+          statusText.textContent = "Cloud Upload Failed! (Status: " + xhr.status + ")";
           statusText.style.color = "#f43f5e";
           uploadBtn.disabled = false;
         }
       };
 
       xhr.onerror = () => {
-        statusText.textContent = "Network Error!";
+        statusText.textContent = "Network Error Occurred!";
         statusText.style.color = "#f43f5e";
         uploadBtn.disabled = false;
       };
 
-      uploadBtn.disabled = true;
       xhr.send(formData);
     }
 
-    function sendToTelegramGroup(title, desc, actionType, unlockUrl, videoUrl) {
+    function sendToTelegramGroup(title, desc, actionsList, unlockUrl, videoUrl) {
       const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`;
 
-      const captionText = `🎬 *${title}*\n\n📝 ${desc}\n\n🔒 *Required Action:* ${actionType}\n\n👇 Click button below to complete task and watch video!`;
+      let actionsText = actionsList.map(a => `👉 ${a.type}: ${a.url}`).join('\n');
+      const captionText = `🎬 *${title}*\n\n📝 ${desc}\n\n🔒 *Required Tasks:*\n${actionsText}\n\n👇 Click button below to complete tasks and watch video!`;
 
       fetch(telegramUrl, {
         method: 'POST',
@@ -494,7 +554,7 @@
           reply_markup: {
             inline_keyboard: [
               [
-                { text: "🔓 Complete Task & Watch Video", url: unlockUrl }
+                { text: "🔓 Complete Tasks & Watch Video", url: unlockUrl }
               ]
             ]
           }
@@ -502,17 +562,27 @@
       })
       .then(res => res.json())
       .then(data => {
-        statusText.textContent = data.ok ? "🚀 Campaign Live on Telegram Group!" : "Telegram Error!";
+        if(data.ok) {
+          statusText.textContent = "🚀 Campaign Live on Telegram Group!";
+        } else {
+          console.error("Telegram API Error:", data);
+          statusText.textContent = "Uploaded, but Telegram error: " + (data.description || "Unknown");
+        }
+      })
+      .catch(err => {
+        console.error('Telegram Network Error:', err);
       });
     }
 
-    function addCampaignToFeed(title, desc, actionType, taskUrl, unlockUrl, videoUrl) {
+    function addCampaignToFeed(title, desc, actionsList, unlockUrl, videoUrl) {
+      let actionsHtml = actionsList.map(a => `<li style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;"><strong>${a.type}:</strong> <a href="${a.url}" target="_blank" style="color:var(--accent-blue);">${a.url}</a></li>`).join('');
+
       const card = document.createElement('div');
       card.className = 'video-card';
       card.innerHTML = `
         <h3>${title}</h3>
         <p>${desc}</p>
-        <p style="font-size: 13px; color: #cbd5e1;"><strong>Required Action (${actionType}):</strong> <a href="${taskUrl}" target="_blank" style="color:var(--accent-blue);">${taskUrl}</a></p>
+        <ul style="list-style: none; margin-bottom: 12px;">${actionsHtml}</ul>
         <div class="unlock-link-box">
           <strong>Generated Lock Link:</strong> <a href="${unlockUrl}" target="_blank" style="color:var(--accent-blue);">${unlockUrl}</a>
         </div>
