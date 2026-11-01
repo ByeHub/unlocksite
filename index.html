@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlockify Pro - Video Content Locker Dashboard</title>
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #131b2e;
+      --bg-input: #090d16;
+      --accent-red: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-blue: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --border-hover: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 850px;
+      background: var(--bg-card);
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .header-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-title span {
+      background: linear-gradient(135deg, var(--accent-red), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--accent-red);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+    }
+
+    /* Action Grid Selection */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .action-card {
+      background: var(--bg-input);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .action-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .action-card.active {
+      border-color: var(--accent-purple);
+      background: rgba(139, 92, 246, 0.12);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+    }
+
+    .action-card span {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .action-card p {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .upload-section {
+      border: 2px dashed var(--border-hover);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      background-color: var(--bg-input);
+      transition: 0.3s;
+    }
+
+    .upload-section:hover {
+      border-color: var(--accent-red);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .custom-file-upload {
+      display: inline-block;
+      padding: 12px 24px;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent-red), #e11d48);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+      transition: 0.3s;
+    }
+
+    .custom-file-upload:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    button.submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--accent-green), #059669);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 25px;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    button.submit-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+    }
+
+    button:disabled {
+      background: #334155;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: var(--bg-input);
+      border-radius: 8px;
+      margin-top: 20px;
+      overflow: hidden;
+      display: none;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 14px;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-purple));
+      border-radius: 8px;
+      transition: width 0.2s ease;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Video Feed List */
+    .feed-header {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--accent-red);
+      padding-left: 12px;
+    }
+
+    .video-card {
+      background: var(--bg-input);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-card h3 {
+      color: #fff;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .video-card p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .unlock-link-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      word-break: break-all;
+      color: var(--accent-blue);
+      margin-top: 12px;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 15px;
+      outline: none;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-title"><span>Unlockify Pro</span> 🔓</div>
+    <div class="header-desc">Create secure video locks with social actions & automate Telegram group broadcasting.</div>
+
+    <!-- 1. Basic Information -->
+    <div class="section-title">ℹ️ Basic Information</div>
+    <div class="form-group">
+      <label>Page Title</label>
+      <input type="text" id="pageTitle" placeholder="e.g. Exclusive HD Video Pack 2026">
+    </div>
+
+    <div class="form-group">
+      <label>Short Description</label>
+      <textarea id="pageDesc" rows="2" placeholder="Write a short enticing description for your audience..."></textarea>
+    </div>
+
+    <!-- 2. Add Unlock Action -->
+    <div class="section-title">🔒 Choose Unlock Action</div>
+    <div class="action-grid">
+      <div class="action-card active" onclick="selectAction(this, 'Telegram Channel', 'https://t.me/')">
+        <span>✈️</span>
+        <p>Join Telegram</p>
+      </div>
+      <div class="action-card" onclick="selectAction(this, 'YouTube Channel', 'https://youtube.com/')">
+        <span>▶️</span>
+        <p>Subscribe YT</p>
+      </div>
+      <div class="action-card" onclick="selectAction(this, 'X (Twitter)', 'https://x.com/')">
+        <span>✖️</span>
+        <p>Follow on X</p>
+      </div>
+      <div class="action-card" onclick="selectAction(this, 'TikTok Account', 'https://tiktok.com/@')">
+        <span>🎵</span>
+        <p>Follow TikTok</p>
+      </div>
+      <div class="action-card" onclick="selectAction(this, 'Custom Link', 'https://')">
+        <span>🔗</span>
+        <p>Other Link</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label id="taskURLLabel">Telegram Channel Target Link</label>
+      <input type="text" id="taskURL" placeholder="https://t.me/Hodamaewa">
+    </div>
+
+    <!-- 3. Upload File -->
+    <div class="section-title">📹 Video Content Target</div>
+    <div class="upload-section">
+      <label for="videoInput" class="custom-file-upload">
+        📁 Select Video File (.mp4)
+      </label>
+      <input type="file" id="videoInput" accept="video/*">
+      <div id="fileName" style="margin-top: 12px; color: var(--text-muted); font-size: 13px;">No file selected</div>
+    </div>
+
+    <button id="uploadBtn" class="submit-btn" onclick="uploadAndLock()">🚀 Create Campaign & Send to Telegram Group</button>
+
+    <div class="progress-bar-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <!-- Created Campaign List -->
+  <div class="container">
+    <div class="feed-header">Active Locked Campaigns Feed</div>
+    <div id="videoGallery">
+      <p style="color: var(--text-muted); font-size: 14px; text-align: center; padding: 20px;">No campaigns created yet. Upload your first video above!</p>
+    </div>
+  </div>
+
+  <script>
+    const CLOUD_NAME = "syvkwktf";
+    const UPLOAD_PRESET = "photohub";
+    
+    const BOT_TOKEN = "9020371210:AAEgRfHc3AiwN10PJxfzEQL0PZnT0Z17Cpc";
+    const CHAT_ID = "-1003951414350";
+
+    let currentActionType = "Telegram Channel";
+
+    const fileInput = document.getElementById('videoInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('status');
+    const videoGallery = document.getElementById('videoGallery');
+
+    fileInput.addEventListener('change', () => {
+      fileNameDisplay.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : "No file selected";
+    });
+
+    function selectAction(element, type, placeholder) {
+      document.querySelectorAll('.action-card').forEach(card => card.classList.remove('active'));
+      element.classList.add('active');
+      currentActionType = type;
+      document.getElementById('taskURLLabel').textContent = `${type} Target Link / Username`;
+      document.getElementById('taskURL').placeholder = placeholder;
+    }
+
+    function uploadAndLock() {
+      const title = document.getElementById('pageTitle').value.trim();
+      const desc = document.getElementById('pageDesc').value.trim();
+      const taskUrl = document.getElementById('taskURL').value.trim();
+      const file = fileInput.files[0];
+
+      if (!title) {
+        alert("කරුණාකර Page Title එකක් ඇතුළත් කරන්න.");
+        return;
+      }
+      if (!taskUrl) {
+        alert("කරුණාකර Task Target Link එකක් ඇතුළත් කරන්න.");
+        return;
+      }
+      if (!file) {
+        alert("කරුණාකර ප්‍රථමයෙන් වීඩියෝ ෆයිල් එකක් තෝරන්න.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', UPLOAD_PRESET);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, true);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          progressContainer.style.display = 'block';
+          const percent = (e.loaded / e.total) * 100;
+          progressBar.style.width = percent + '%';
+          statusText.textContent = `Cloud Uploading... ${Math.round(percent)}%`;
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          const videoUrl = response.secure_url;
+          
+          // Generate Unlock Landing Link
+          const unlockLandingUrl = `${window.location.origin}${window.location.pathname}?v=${encodeURIComponent(videoUrl)}&task=${encodeURIComponent(taskUrl)}&title=${encodeURIComponent(title)}&type=${encodeURIComponent(currentActionType)}`;
+
+          statusText.textContent = "Upload Done! Broadcasting to Telegram Group...";
+          statusText.style.color = "#10b981";
+
+          // Remove empty feed placeholder if exists
+          if (videoGallery.querySelector('p')) {
+            videoGallery.innerHTML = '';
+          }
+
+          // Add to Dashboard
+          addCampaignToFeed(title, desc, currentActionType, taskUrl, unlockLandingUrl, videoUrl);
+
+          // Push to Telegram Group with Inline Button
+          sendToTelegramGroup(title, desc, currentActionType, unlockLandingUrl, videoUrl);
+
+          // Reset Form
+          document.getElementById('pageTitle').value = '';
+          document.getElementById('pageDesc').value = '';
+          document.getElementById('taskURL').value = '';
+          fileInput.value = '';
+          fileNameDisplay.textContent = 'No file selected';
+          uploadBtn.disabled = false;
+          setTimeout(() => { progressContainer.style.display = 'none'; progressBar.style.width = '0%'; }, 3000);
+        } else {
+          statusText.textContent = "Cloud Upload Failed!";
+          statusText.style.color = "#f43f5e";
+          uploadBtn.disabled = false;
+        }
+      };
+
+      xhr.onerror = () => {
+        statusText.textContent = "Network Error!";
+        statusText.style.color = "#f43f5e";
+        uploadBtn.disabled = false;
+      };
+
+      uploadBtn.disabled = true;
+      xhr.send(formData);
+    }
+
+    function sendToTelegramGroup(title, desc, actionType, unlockUrl, videoUrl) {
+      const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`;
+
+      const captionText = `🎬 *${title}*\n\n📝 ${desc}\n\n🔒 *Required Action:* ${actionType}\n\n👇 Click button below to complete task and watch video!`;
+
+      fetch(telegramUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          video: videoUrl,
+          caption: captionText,
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: "🔓 Complete Task & Watch Video", url: unlockUrl }
+              ]
+            ]
+          }
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        statusText.textContent = data.ok ? "🚀 Campaign Live on Telegram Group!" : "Telegram Error!";
+      });
+    }
+
+    function addCampaignToFeed(title, desc, actionType, taskUrl, unlockUrl, videoUrl) {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `
+        <h3>${title}</h3>
+        <p>${desc}</p>
+        <p style="font-size: 13px; color: #cbd5e1;"><strong>Required Action (${actionType}):</strong> <a href="${taskUrl}" target="_blank" style="color:var(--accent-blue);">${taskUrl}</a></p>
+        <div class="unlock-link-box">
+          <strong>Generated Lock Link:</strong> <a href="${unlockUrl}" target="_blank" style="color:var(--accent-blue);">${unlockUrl}</a>
+        </div>
+        <video controls>
+          <source src="${videoUrl}" type="video/mp4">
+        </video>
+      `;
+      videoGallery.prepend(card);
+    }
+  </script>
+</body>
+</html>
